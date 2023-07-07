@@ -9,19 +9,25 @@ mkdir workspace
 ```
 
 ### bash profile
+1. execute the following
 ```
 cd ~/workspace
 touch .bashrc
 ```
-edit the file with:
+2. add the following to the file to be executed every time you start gitbash:
 ```
 cd ~/workspace
 eval "$(ssh-agent -s)"
 ```
-restart gitbash
+3. restart gitbash
 
 ### ssh
-
+1. generate an ssh key with [these instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+2. tell github about new ssh key with [these instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+3. add the following to the end of your .bashrc
+```
+ssh-add ~/.ssh/<PRIVATE_KEY_FILE>
+```
 
 ### gpg
 1. download a binary from [gnupg downloads](https://www.gnupg.org/download/)
@@ -49,6 +55,12 @@ git config --global --edit
 
 ## JavaScript
 ### visual studio code
+[downloads page](https://code.visualstudio.com/download)
+
+### node
+1. install `node version manager (nvm)` by following [these instructions](https://github.com/nvm-sh/nvm)
+2. `nvm install node <VERSION>`
+3. `nvm install-latest-npm`
 
 ## Java
 
