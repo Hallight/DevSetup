@@ -59,13 +59,29 @@ git config --global --edit
 
 ### node
 1. install `node version manager (nvm)` by following [these instructions](https://github.com/nvm-sh/nvm)
-2. `nvm install node <VERSION>`
-3. `nvm install-latest-npm`
+2. `nvm install --lts`
+
+## Unreal Engine (w/ C++)
+### Epic Games Launcher
+[download here](https://store.epicgames.com/en-US/download)
+
+### Visual Studio (free)
+[download here](https://visualstudio.microsoft.com/downloads/)
+
+include "game development w/ c++" plugin during installation
+
+Will need Visual Studio 2018 for UE <5.0, otherwise can use 2022
+
+### Jetbrains Rider (paid)
+[download here](https://www.jetbrains.com/rider/download)
+
+### Download required .NET, C++ libraries
+1. Open your chosen IDE
+2. Use the IDE to open the chosen C++ enabled UE project folder
+3. Install any packages and libraries you are prompted for the project
 
 ## Java
 
 
 ## Terraform
 
-
-## C++
