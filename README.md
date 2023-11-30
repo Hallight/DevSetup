@@ -53,6 +53,9 @@ git config --global --edit
 ### github desktop client
 [download here](https://desktop.github.com/)
 
+### github CLI
+[download here](https://cli.github.com/)
+
 ## JavaScript
 ### visual studio code
 [downloads page](https://code.visualstudio.com/download)
