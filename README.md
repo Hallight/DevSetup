@@ -83,6 +83,52 @@ Will need Visual Studio 2018 for UE <5.0, otherwise can use 2022
 2. Use the IDE to open the chosen C++ enabled UE project folder
 3. Install any packages and libraries you are prompted for the project
 
+## AWS
+### Config (Root)
+in `~/.aws/config`
+```
+[default]
+region = us-west-2
+output = json
+```
+in `~/.aws/credentials`
+```
+[default]
+aws_access_key_id     = xxxx
+aws_secret_access_key = xxxx
+
+[your-app-profile]
+aws_access_key_id     = xxxx
+aws_secret_access_key = xxxx
+```
+
+### CLI
+[instructions here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+`msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi`
+
+### CDK
+`npm i -g aws-cdk`
+
+inside cdk folder `cdk init app --language typscript`
+
+### Config (SSO)
+in `~/.aws/config`
+```
+[default]
+sso_session = my-sso
+sso_account_id = 381492108521
+sso_role_name = Admin Team
+region = us-east-1
+output = json
+
+[sso-session my-sso]
+sso_region = us-east-1
+sso_start_url = https://d-9a6770bd00.awsapps.com/start/
+sso_registration_scopes = sso:account:access
+```
+
+
 ## Java
 
 
