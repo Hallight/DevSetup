@@ -61,8 +61,9 @@ git config --global --edit
 [downloads page](https://code.visualstudio.com/download)
 
 ### node
-1. install `node version manager (nvm)` by following [these instructions](https://github.com/nvm-sh/nvm)
-2. `nvm install --lts`
+1. install `node version manager (nvm)` by following [these instructions](https://github.com/coreybutler/nvm-windows/releases)
+2. `nvm install lts`
+3. `nvm use lts`
 
 ## Unreal Engine (w/ C++)
 ### Epic Games Launcher
