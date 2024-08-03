@@ -72,7 +72,10 @@ git config --global --edit
 ### Visual Studio (free)
 [download here](https://visualstudio.microsoft.com/downloads/)
 
-include "game development w/ c++" plugin during installation
+include the following workloads:
+- .NET desktop development
+- Desktop development with C++
+- Game development w/ C++
 
 Will need Visual Studio 2018 for UE <5.0, otherwise can use 2022
 
