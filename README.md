@@ -133,11 +133,21 @@ sso_registration_scopes = sso:account:access
 ```
 
 ## Python
-### pyenv
-Check [Github](https://github.com/pyenv-win/pyenv-win) for instructions
-Run `Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"`
+### Install Python
+- Install pyenv. Check [Github](https://github.com/pyenv-win/pyenv-win) for instructions
+- `Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"`
+- Confirm installation `pyenv --version`
+- Check available versions `pyenv install -l | findstr 3.11`
+- Install `pyenv install 3.11.9`
+- Set global python version `pyenv global 3.11.9`
 
 Direct download from [python downloads](https://www.python.org/downloads/)
+### Setup vitual environment
+- `pip install virtualenv`
+- cd into your project dir
+- `virtualenv rr-data-pipelines`
+- `.\rr-data-pipelines\Scripts\activate`
+- to exit venv `deactivate`
 
 ## Java
 
