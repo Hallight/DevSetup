@@ -132,6 +132,12 @@ sso_start_url = https://d-9a6770bd00.awsapps.com/start/
 sso_registration_scopes = sso:account:access
 ```
 
+## Python
+### pyenv
+Check [Github](https://github.com/pyenv-win/pyenv-win) for instructions
+Run `Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"`
+
+Direct download from [python downloads](https://www.python.org/downloads/)
 
 ## Java
 
