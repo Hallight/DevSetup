@@ -156,6 +156,10 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 - (Optional) stop ollama on startup
   - Press Win + R → type: shell:startup
   - See if there's a shortcut to ollama.exe in there → delete it.
-- Start ollama `Start-Job -ScriptBlock { ollama serve }`
+- Start ollama Start-Job -ScriptBlock { ollama serve }
 - End `Remove-Job Job1`
 
+## Useful PowerShell Commands
+- Current available commands `Get-Module -ListAvailable`
+- Start background job `Start-Job -ScriptBlock { ollama serve }`
+- Remove backgroun job `Remove-Job Job1`
