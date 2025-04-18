@@ -149,8 +149,13 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 - `.\rr-data-pipelines\Scripts\activate`
 - to exit venv `deactivate`
 
-## Java
-
-
-## Terraform
+## Local LLM
+- Download [ollama](https://ollama.com/download)
+- Pick a model [ollama search](https://ollama.com/search)
+- Download the model `ollama pull deepseek-coder:6.7b`
+- (Optional) stop ollama on startup
+  - Press Win + R → type: shell:startup
+  - See if there's a shortcut to ollama.exe in there → delete it.
+- Start ollama `Start-Job -ScriptBlock { ollama serve }`
+- End `Remove-Job Job1`
 
