@@ -149,17 +149,54 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 - `.\rr-data-pipelines\Scripts\activate`
 - to exit venv `deactivate`
 
-## Local LLM
+## AI
+### Continue
+- add to VSCode via extensions
+- `.continue/config.json`
+``` json
+{
+  "models": [
+    {
+      "title": "ollama",
+      "model": "AUTODETECT",
+      "provider": "ollama"
+    },
+    {
+      "title": "Gemini 2.5 Flash-Lite Preview",
+      "model": "gemini-2.5-flash-lite-preview-06-17",
+      "provider": "gemini",
+      "apiKey": "GOOGLE_API_KEY"
+    },
+    {
+      "title": "Gemini 2.5 Flash",
+      "model": "gemini-2.5-flash",
+      "provider": "gemini",
+      "apiKey": "GOOGLE_API_KEY"
+    },
+    {
+      "title": "Gemini 2.0 Flash",
+      "model": "gemini-2.0-flash",
+      "provider": "gemini",
+      "apiKey": "GOOGLE_API_KEY"
+    }
+  ],
+  "tabAutocompleteModel": {
+      "title": "ollama",
+      "model": "AUTODETECT",
+      "provider": "ollama"
+  }
+}
+```
+
+### Local Model
 - Download [ollama](https://ollama.com/download)
 - Pick a model [ollama search](https://ollama.com/search)
 - Download the model `ollama pull deepseek-coder:6.7b`
 - (Optional) stop ollama on startup
   - Press Win + R → type: shell:startup
   - See if there's a shortcut to ollama.exe in there → delete it.
-- Start ollama Start-Job -ScriptBlock { ollama serve }
+- Start ollama `Start-Job -ScriptBlock { ollama serve }`
 - End `Remove-Job Job1`
 
 ## Useful PowerShell Commands
 - Current available commands `Get-Module -ListAvailable`
-- Start background job `Start-Job -ScriptBlock { ollama serve }`
-- Remove backgroun job `Remove-Job Job1`
