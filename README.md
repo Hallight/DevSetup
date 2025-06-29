@@ -198,5 +198,37 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 - Start ollama `Start-Job -ScriptBlock { ollama serve }`
 - End `Remove-Job Job1`
 
+### Aider
+- Assuming Python installation and virtual env setup has occurred. navigate to specific venv and activate
+- `python -m pip install aider-chat`
+- setup your .env for Aider in your project repo
+```
+OPENAI_API_KEY=your-openai-key-here
+OPENAI_API_BASE=https://ai-service.com # optional
+
+AIDER_ANALYTICS=false # optional
+AIDER_YES_ALWAYS=true #useful for automations and agentic actions
+AIDER_MAP_TOKENS=4096 # Increase or decrease depending on repo/model
+AIDER_LINT_CMD=npm run lint:me -- # Whatever your codebase lint command is
+AIDER_TEST_CMD=cd src/app && npm run validate # Whatever your codebase test command is
+AIDER_AUTO_LINT=true # Useful for automatically fixing problems after applying edits
+AIDER_AUTO_TEST=true # Useful to validate edits automatically
+AIDER_WATCH_FILES=true # Aider automatically takes actions on code comments including the word, Ai! or Ai?
+AIDER_DARK_MODE=true
+AIDER_EDITOR="code --wait" # Helpful for more reliable code edits
+AIDER_AUTO_COMMITS=false # We should review it's outputs before committing (or make sure you have a good pre-commit hook)
+AIDER_EDITOR_EDIT_FORMAT=diff # udiff is also good, default is whole file
+AIDER_EDIT_FORMAT=diff # udiff is also good, default is whole file
+AIDER_ARCHITECT=true #  Architect mode enhances the coding ability by reasoning before working to improve the code prompt
+AIDER_STREAM=false # For models that do not support streaming
+AIDER_MODEL=o3-mini # Current best of the best
+AIDER_EDITOR_MODEL=o3-mini # Current best editor model
+AIDER_WEAK_MODEL=gpt-4o # Weak model for MR commits
+```
+
 ## Useful PowerShell Commands
 - Current available commands `Get-Module -ListAvailable`
+- Start background job `Start-Job -ScriptBlock { ollama serve }`
+- Remove backgroun job `Remove-Job Job1`
+- determine location of PowerShell Profile file `echo $PROFILE`
+- find command location `get-command python`
