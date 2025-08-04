@@ -135,6 +135,7 @@ sso_registration_scopes = sso:account:access
 ## Python
 ### Install Python
 - Install pyenv. Check [Github](https://github.com/pyenv-win/pyenv-win) for instructions
+- `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process`
 - `Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"`
 - Confirm installation `pyenv --version`
 - Check available versions `pyenv install -l | findstr 3.11`
@@ -196,7 +197,9 @@ Direct download from [python downloads](https://www.python.org/downloads/)
   - Press Win + R → type: shell:startup
   - See if there's a shortcut to ollama.exe in there → delete it.
 - Start ollama `Start-Job -ScriptBlock { ollama serve }`
-- End `Remove-Job Job1`
+- End `Stop-Job -Name Job1`
+- list active models `ollama ps`
+
 
 ### Aider
 - Assuming Python installation and virtual env setup has occurred. navigate to specific venv and activate
@@ -229,6 +232,6 @@ AIDER_WEAK_MODEL=gpt-4o # Weak model for MR commits
 ## Useful PowerShell Commands
 - Current available commands `Get-Module -ListAvailable`
 - Start background job `Start-Job -ScriptBlock { ollama serve }`
-- Remove backgroun job `Remove-Job Job1`
+- stop background job `Stop-Job -Name Job1`
 - determine location of PowerShell Profile file `echo $PROFILE`
 - find command location `get-command python`
