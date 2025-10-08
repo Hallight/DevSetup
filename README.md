@@ -231,7 +231,9 @@ AIDER_WEAK_MODEL=gpt-4o # Weak model for MR commits
 
 ## Useful PowerShell Commands
 - Current available commands `Get-Module -ListAvailable`
+- start process `Start-Process "ollama" -ArgumentList "serve"`
 - Start background job `Start-Job -ScriptBlock { ollama serve }`
+- list background jobs `Get-Job`
 - stop background job `Stop-Job -Name Job1`
 - determine location of PowerShell Profile file `echo $PROFILE`
 - find command location `get-command python`
