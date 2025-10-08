@@ -150,6 +150,10 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 - `.\rr-data-pipelines\Scripts\activate`
 - to exit venv `deactivate`
 
+### Add index URLs
+- open `~/AppData/Roaming/pip/pip.ini`
+- add extra-index-url = YOUR_URL
+
 ## AI
 ### Continue
 - add to VSCode via extensions
