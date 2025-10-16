@@ -241,3 +241,4 @@ AIDER_WEAK_MODEL=gpt-4o # Weak model for MR commits
 - stop background job `Stop-Job -Name Job1`
 - determine location of PowerShell Profile file `echo $PROFILE`
 - find command location `get-command python`
+- set environment variable `Set-Item -Path Env:\ENV -Value "dev"`
