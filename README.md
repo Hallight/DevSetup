@@ -146,8 +146,8 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 ### Setup vitual environment
 - `pip install virtualenv`
 - cd into your project dir
-- `virtualenv rr-data-pipelines`
-- `.\rr-data-pipelines\Scripts\activate`
+- `virtualenv meeplematesonlineservices`
+- `.\meeplematesonlineservices\Scripts\activate`
 - to exit venv `deactivate`
 
 ### Add index URLs
