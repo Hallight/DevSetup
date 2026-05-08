@@ -157,6 +157,10 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 - add extra-index-url = YOUR_URL
 
 ## AI
+### Claude Code
+- [getting started docs](https://code.claude.com/docs/en/overview)
+- `irm https://claude.ai/install.ps1 | iex`
+
 ### Continue
 - add to VSCode via extensions
 - `.continue/config.json`
