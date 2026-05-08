@@ -7,6 +7,8 @@ This folder holds the personal Claude Code customizations that are tracked in th
 - **`skills/`** — canonical source for personal Claude skills (commit-push, issue-create, issue-implement, pr-create, pr-merge, pr-merge-main, pr-respond, trello-create, trello-implement). Each subdirectory is one skill, containing a `SKILL.md`. On a configured machine, `~/.claude/skills/<name>` is a junction (Windows) or symlink (macOS/Linux) into this folder, so editing a `SKILL.md` here or there is the same edit.
 - **`commands/`** — repo-scoped slash commands. Currently:
   - `/personal-skills-sync` — runs the OS-appropriate script under `../scripts/` to set up the skill links described above.
+  - `/personal-secrets-pull` — fetches personal secrets (AWS creds, Claude MCP servers) from AWS Secrets Manager into local files. See `../personal-secrets/README.md`.
+  - `/personal-secrets-push` — uploads the local files back to AWS Secrets Manager (also handles the initial seeding by creating the secrets the first time).
 
 ## Bootstrap on a new machine
 

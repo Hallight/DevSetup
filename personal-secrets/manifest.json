@@ -1,0 +1,18 @@
+{
+  "region": "us-west-2",
+  "profile": "mah13090-admin",
+  "secrets": [
+    {
+      "name": "personal/aws/credentials",
+      "destination": "~/.aws/credentials",
+      "format": "raw",
+      "permissions": "0600"
+    },
+    {
+      "name": "personal/claude/mcp-servers",
+      "destination": "~/.claude.json",
+      "format": "json-merge",
+      "merge_path": "mcpServers"
+    }
+  ]
+}
