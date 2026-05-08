@@ -135,8 +135,10 @@ sso_registration_scopes = sso:account:access
 ## Python
 ### Install Python
 - Install pyenv. Check [Github](https://github.com/pyenv-win/pyenv-win) for instructions
-- `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process`
-- `Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"`
+```
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
+Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
+```
 - Confirm installation `pyenv --version`
 - Check available versions `pyenv install -l | findstr 3.11`
 - Install `pyenv install 3.11.9`
