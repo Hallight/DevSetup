@@ -1,5 +1,5 @@
 ---
-name: pr-merge-main
+name: branch-merge-main
 description: Use when the user asks to merge main into the current branch, sync with main, rebase on main, update from main, or says "merge main", "pull main", "sync with main".
 ---
 
