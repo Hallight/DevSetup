@@ -161,6 +161,39 @@ Direct download from [python downloads](https://www.python.org/downloads/)
 - [getting started docs](https://code.claude.com/docs/en/overview)
 - `irm https://claude.ai/install.ps1 | iex`
 
+#### Claude bot GitHub account (for `/issue-implement` and `/pr-create`)
+
+The `/pr-create` skill opens PRs from a separate `<DEV_USER>-claude` GitHub account so reviews are not self-approved. To enable this on a new machine after creating the bot account and uploading its public SSH key to GitHub:
+
+1. Generate (or copy in) the bot keypair at `~/.ssh/<bot>-github` / `~/.ssh/<bot>-github.pub` and upload the public key under the bot's GitHub → Settings → SSH keys.
+2. Append the bot key to ssh-agent on shell startup by adding to `~/.bashrc`:
+   ```
+   ssh-add ~/.ssh/<bot>-github
+   ```
+3. Add a host alias to `~/.ssh/config` so git operations can pin to the bot key:
+   ```
+   Host github.com-<bot>
+     HostName github.com
+     User git
+     IdentityFile ~/.ssh/<bot>-github
+     IdentitiesOnly yes
+   ```
+4. Restart gitbash, then verify each key resolves to the expected identity:
+   ```
+   ssh -T git@github.com                  # → Hi <DEV_USER>!
+   ssh -T git@github.com-<bot>            # → Hi <bot>!
+   ```
+5. Authenticate `gh` CLI as the bot. Recommended scopes match the dev account: `gist, read:org, repo, admin:public_key`. Either:
+   - PAT: `gh auth login --hostname github.com --git-protocol ssh --with-token < /path/to/bot.pat`
+   - Web: log into github.com as the bot in an incognito window first, then `gh auth login --hostname github.com --git-protocol ssh` and skip uploading a new key.
+6. Verify both accounts are registered and switching works:
+   ```
+   gh auth status                          # lists both accounts
+   gh auth switch --user <bot>
+   gh api user --jq '.login'               # → <bot>
+   gh auth switch --user <DEV_USER>
+   ```
+
 ### Continue
 - add to VSCode via extensions
 - `.continue/config.json`
