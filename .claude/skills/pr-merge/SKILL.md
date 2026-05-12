@@ -34,6 +34,20 @@ gh auth switch --user "$DEV_USER"
 
 `gh auth switch --user` is case-sensitive, so don't assume the bot login is `${DEV_USER}-claude` — discover it from `gh auth status` (it may differ in case).
 
+### 2b. Verify the remote branch was deleted
+
+`--delete-branch` can fail silently (race with a CI workflow holding refs, transient API error, or the repo not having `delete_branch_on_merge` enabled as a safety net). Confirm the remote branch is gone and force-delete it if not:
+
+```bash
+BRANCH=$(gh pr view <number> --json headRefName -q '.headRefName')
+if gh api "repos/:owner/:repo/branches/$BRANCH" --silent 2>/dev/null; then
+  echo "Remote branch $BRANCH still exists after merge — force-deleting"
+  gh api -X DELETE "repos/:owner/:repo/git/refs/heads/$BRANCH"
+fi
+```
+
+Stale merged branches accumulate quickly without this check — they clutter `git branch -r` and waste reviewer attention when scanning open work.
+
 ### 3. Watch pre-merge cleanup workflow (if any)
 
 If the project runs a pre-merge cleanup workflow on PR close (e.g. tearing down a branch preview stack), watch it. The project CLAUDE.md should specify the workflow file name and which job to watch:
