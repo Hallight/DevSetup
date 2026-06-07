@@ -4,9 +4,9 @@ This folder holds the personal Claude Code customizations that are tracked in th
 
 ## Layout
 
-- **`skills/`** — canonical source for personal Claude skills (branch-merge-main, branch-update-all, commit-push, issue-create, issue-implement, pr-create, pr-merge, pr-respond, trello-create, trello-implement). Each subdirectory is one skill, containing a `SKILL.md`. On a configured machine, `~/.claude/skills/<name>` is a junction (Windows) or symlink (macOS/Linux) into this folder, so editing a `SKILL.md` here or there is the same edit.
+- **`skills/`** — canonical source for personal Claude skills (branch-checkout, branch-cleanup, branch-merge-main, branch-update-all, commit-push, issue-create, issue-implement, personal-skills-sync, pr-create, pr-merge, pr-respond, trello-create, trello-implement). Each subdirectory is one skill, containing a `SKILL.md`. On a configured machine, `~/.claude/skills/<name>` is a junction (Windows) or symlink (macOS/Linux) into this folder, so editing a `SKILL.md` here or there is the same edit.
+  - `/personal-skills-sync` — runs the OS-appropriate script under `../scripts/` to set up the skill links described above. Once linked it's available from any project; on first bootstrap run the script directly (below).
 - **`commands/`** — repo-scoped slash commands. Currently:
-  - `/personal-skills-sync` — runs the OS-appropriate script under `../scripts/` to set up the skill links described above.
   - `/personal-secrets-pull` — fetches personal secrets (AWS creds, Claude MCP servers) from AWS Secrets Manager into local files. See `../personal-secrets/README.md`.
   - `/personal-secrets-push` — uploads the local files back to AWS Secrets Manager (also handles the initial seeding by creating the secrets the first time).
 
@@ -17,12 +17,12 @@ git clone <this repo>
 cd DevSetup
 ```
 
-Then either:
+On first bootstrap the `personal-skills-sync` skill isn't linked yet, so run the script directly from the repo root:
 
-- From inside Claude Code with this repo open: run `/personal-skills-sync`.
-- Or run the script directly:
-  - Windows: `pwsh -File scripts/personal-skills-sync.ps1`
-  - macOS / Linux: `bash scripts/personal-skills-sync.sh`
+- Windows: `pwsh -File scripts/personal-skills-sync.ps1`
+- macOS / Linux: `bash scripts/personal-skills-sync.sh`
+
+Once that first run links the skills, you can re-sync from any project later by running `/personal-skills-sync`.
 
 ## "Skip if exists" semantics
 

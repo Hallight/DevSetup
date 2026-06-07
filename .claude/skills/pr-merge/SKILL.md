@@ -84,44 +84,21 @@ The hotfix PR **must** be on the same branch name as the PR that just merged —
 ```bash
 # Discover the original branch from the merged PR
 ORIG_BRANCH=$(gh pr view <merged-pr-number> --json headRefName -q '.headRefName')
-
-# Refresh main in the primary checkout, then create a fresh worktree on the same branch name
-REPO_ROOT=$(git rev-parse --show-toplevel)
-git -C "$REPO_ROOT" fetch origin main
-git worktree add "$REPO_ROOT/.claude/worktrees/$ORIG_BRANCH" -b "$ORIG_BRANCH" origin/main
-
-cd "$REPO_ROOT/.claude/worktrees/$ORIG_BRANCH"
-# ... fix the failure ...
 ```
 
-Then use the `pr-create` skill to open the PR. Reference the failed run URL in the PR description. The skill's bot-account verification ensures the hotfix PR is also opened under the bot, not the developer.
+Use the **`/branch-checkout`** skill (Mode A — new branch off `origin/main`) with `$ORIG_BRANCH` to create and switch into a fresh worktree on that name, then fix the failure. Then use the `pr-create` skill to open the PR. Reference the failed run URL in the PR description. The skill's bot-account verification ensures the hotfix PR is also opened under the bot, not the developer.
 
 Do **not** close the originating issue (Linear/Jira/GitHub/Trello) until the hotfix lands and prod is verified.
 
 ### 6. Clean up local worktree and branch
 
-If a worktree or local branch exists for this branch, remove them. **Critical on Windows**: any prior `cd` into the worktree directory keeps file handles open for a while after the shell command returns, which makes `git worktree remove` fail with `Permission denied` and leaves the directory orphaned on disk. The fix is to `cd` somewhere outside the worktree first, then run the removal, and follow up with an explicit `rm -rf` as a backstop in case `git worktree remove` got partway through (metadata removed, directory still on disk).
+The merge in step 2 is confirmed, so the deletion is safe. Use the **`/branch-cleanup`** skill with the merged branch name to remove the worktree and local branch (it owns the Windows-safe removal sequence and the `branch -D` squash-merge handling):
 
 ```bash
-REPO_ROOT=$(git rev-parse --show-toplevel)
 BRANCH=$(gh pr view <number> --json headRefName -q '.headRefName')
-WORKTREE="$REPO_ROOT/.claude/worktrees/$BRANCH"
-
-# Move cwd out of any worktree first (root drive is always safe).
-cd "$REPO_ROOT/.."
-
-if git worktree list --porcelain | grep -q "^worktree $WORKTREE$"; then
-  git -C "$REPO_ROOT" worktree remove --force "$WORKTREE" 2>/dev/null \
-    || echo "git worktree remove failed; will rm -rf instead"
-fi
-
-# Backstop: if the directory still exists (Windows file-lock case or partial
-# removal), force-delete it. Also prune the metadata so `git worktree list` is clean.
-[ -d "$WORKTREE" ] && rm -rf "$WORKTREE"
-git -C "$REPO_ROOT" worktree prune
-
-git -C "$REPO_ROOT" branch -d "$BRANCH" 2>/dev/null && echo "Deleted local branch: $BRANCH"
 ```
+
+Pass `$BRANCH` to `/branch-cleanup`.
 
 ### 7. Confirm and close
 

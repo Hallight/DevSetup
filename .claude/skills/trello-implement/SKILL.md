@@ -32,24 +32,9 @@ If the card has no `## Goal` or no "Acceptance criteria" checklist, **stop and a
 
 ### 2. Create a worktree for the branch
 
+Use the **`/branch-checkout`** skill (Mode A — new branch off `origin/main`) to create and switch into the worktree. It owns the standard location and config-copy.
+
 Branch name follows the project's branch convention (see CLAUDE.md). For Trello-tracked projects, this is typically `mm-{idShort}` lowercase (e.g. `mm-89` for idShort 89). **No slashes** — preview-stack names derive from branch names.
-
-```bash
-# Fetch latest main and store repo root
-REPO_ROOT=$(git rev-parse --show-toplevel)
-git fetch origin main
-
-# Create worktree with the correct branch name (lowercase, no slashes)
-BRANCH="mm-<idShort>"
-git worktree add "$REPO_ROOT/.claude/worktrees/$BRANCH" -b "$BRANCH" origin/main
-
-# Copy any untracked config files the project lists in its CLAUDE.md
-WORKTREE="$REPO_ROOT/.claude/worktrees/$BRANCH"
-# e.g. cp "$REPO_ROOT/.env" "$WORKTREE/.env" 2>/dev/null
-
-# Switch into the worktree — ALL subsequent steps run from here
-cd "$WORKTREE"
-```
 
 > **Important:** All remaining steps (implement, verify, commit, PR) run inside the worktree directory. File paths in steps 3–5 are relative to the worktree root.
 

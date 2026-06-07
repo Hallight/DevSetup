@@ -20,25 +20,9 @@ Get the full issue from the project's tracker (Linear / Jira / GitHub Issues —
 
 ### 2. Create a worktree for the branch
 
+Use the **`/branch-checkout`** skill (Mode A — new branch off `origin/main`) to create and switch into the worktree. It owns the standard location and config-copy.
+
 Branch name follows the project's branch convention (see CLAUDE.md). Common pattern: lowercase issue ID (e.g. `abc-7`). Some CIs (e.g. those that derive preview-stack names from branches) disallow slashes — never use a tracker-generated branch name with slashes if so.
-
-```bash
-# Fetch latest main and store repo root
-REPO_ROOT=$(git rev-parse --show-toplevel)
-git fetch origin main
-
-# Create worktree with the correct branch name
-git worktree add "$REPO_ROOT/.claude/worktrees/<branch>" -b <branch> origin/main
-
-# Copy any untracked config files the project lists in its CLAUDE.md
-# (or use the project's worktree-include configuration if defined)
-WORKTREE="$REPO_ROOT/.claude/worktrees/<branch>"
-# e.g. cp "$REPO_ROOT/.env" "$WORKTREE/.env" 2>/dev/null
-# Project CLAUDE.md should enumerate the exact list
-
-# Switch into the worktree — ALL subsequent steps run from here
-cd "$WORKTREE"
-```
 
 > **Important:** All remaining steps (implement, verify, commit, PR) run inside the worktree directory. File paths in steps 3–5 are relative to the worktree root, which is a full copy of the repo.
 
