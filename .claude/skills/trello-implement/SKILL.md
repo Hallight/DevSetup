@@ -19,16 +19,16 @@ Get the full card from Trello using the user-supplied identifier. Two ID formats
 From the card, gather:
 
 - **`name`** → card title (used in PR title)
-- **`desc`** → markdown description. Parse these standard sections (which the project's `/trello-implement` cards use):
-  - `## Goal` → user-facing problem (= Linear "Description")
-  - `## Files to create/modify` or `## Files to modify` → technical guidance, file paths, approach (= Linear "Technical Guidance")
-  - `## Pre-flight` → manual steps required before merge
-  - `## Reference` → links to plan files, gold-standard repos, etc.
+- **`desc`** → markdown description. Cards follow the `/trello-create` template, which mirrors `/issue-create`. Parse these sections:
+  - `## Description` → user-facing problem (= Linear "Description")
+  - `## Testing Specifications` → API / Browser / Manual-in-editor-on-device test cases that prove the acceptance criteria
+  - `## Technical Guidance` → file paths, approach, gotchas, and any manual pre-merge steps the agent must NOT auto-execute
+  - `## Approvers` → Developer/Product approver roles (also reflected in card members)
 - **Acceptance criteria** → use `mcp__trello__get_checklist_items` (or the items embedded in `mcp__trello__get_card` output) on the card's checklist named "Acceptance criteria". These items are the verifiable acceptance criteria — every box must be true in prod when the PR merges. (= Linear "Acceptance Criteria")
 - **`idMembers`** → approvers. If empty, fall back to the repo owner (per project CLAUDE.md or `git config remote.origin.url`).
 - **`idShort`** and **`shortLink`** → context for branch + PR naming.
 
-If the card has no `## Goal` or no "Acceptance criteria" checklist, **stop and ask the user** before proceeding — under-specified work is a recipe for scope creep.
+If the card has no `## Description` or no "Acceptance criteria" checklist, **stop and ask the user** before proceeding — under-specified work is a recipe for scope creep.
 
 ### 2. Create a worktree for the branch
 
@@ -42,10 +42,11 @@ Branch name follows the project's branch convention (see CLAUDE.md). For Trello-
 
 - Read every file you will touch before editing
 - Follow CLAUDE.md conventions for the layer being changed (API, infra, frontend, etc.)
-- Work through the `## Files to create/modify` section top to bottom
+- Work through the `## Technical Guidance` section top to bottom
+- Satisfy the `## Testing Specifications` — write/run the API, browser, or manual/in-editor/on-device tests it lists
 - Tick off acceptance-criteria items mentally as you complete them — every checklist item must be satisfied
 - Do not add scope beyond what the card specifies
-- If the card has a `## Pre-flight` section, surface those manual steps to the user before merge — do not auto-execute them
+- Surface any manual pre-merge steps (called out in Technical Guidance) to the user before merge — do not auto-execute them
 
 ### 4. Verify locally
 
@@ -73,4 +74,4 @@ After the PR is open, optionally `mcp__trello__add_comment` on the card with the
 
 - The PR URL
 - Which approvers still need to review
-- Any `## Pre-flight` manual steps from the card that must happen before merge (e.g. "delete CDK-owned Route 53 record")
+- Any manual pre-merge steps from the card (called out in Technical Guidance) that must happen before merge (e.g. "delete CDK-owned Route 53 record")
