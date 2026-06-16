@@ -33,7 +33,7 @@ git log --oneline -5
 4. Analyze the changes and create a descriptive commit message following the project conventions:
    - Format: `type: description` (feat, fix, chore, docs, refactor)
    - Keep it concise but descriptive
-   - Always end with: `Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>`
+   - Always end with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`
 5. Create the commit with `--author` to attribute to the bot account:
    ```bash
    git commit --author="$BOT_AUTHOR" -m "..."
@@ -62,7 +62,7 @@ feat: Add customer analytics dashboard
 - Add job completion rate metrics
 - Add AR aging summary
 
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 EOF
 )" && git push origin $(git branch --show-current)
 ```

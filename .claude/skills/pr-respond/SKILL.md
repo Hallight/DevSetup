@@ -65,7 +65,7 @@ gh pr list --head $(git branch --show-current) --json number,title,url
      -m "$(cat <<'EOF'
    fix: address PR feedback
 
-   Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+   Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
    EOF
    )" && git push
    ```
