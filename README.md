@@ -194,6 +194,56 @@ The `/pr-create` skill opens PRs from a separate `<DEV_USER>-claude` GitHub acco
    gh auth switch --user <DEV_USER>
    ```
 
+### UnrealMCP (Claude Code MCP server)
+
+Lets Claude Code drive the running **Unreal Engine 5.5** editor over MCP (spawn actors,
+edit Blueprints/UMG, run editor commands) for the MeepleMates project. The editor-side
+C++ plugin is vendored in the MeepleMates repo (`Plugins/UnrealMCP/`) and runs a TCP
+bridge on `127.0.0.1:55557`; an external Python server bridges Claude Code's stdio MCP
+to that socket.
+
+The server is registered at **user scope** (`~/.claude.json`) so it is available in all
+projects and no machine-specific paths get committed to the game repo.
+
+#### Prerequisites
+1. **`uv`** (the Python runner the bridge launches under) — install per [uv docs](https://docs.astral.sh/uv/):
+   ```
+   irm https://astral.sh/uv/install.ps1 | iex
+   ```
+   Note the resulting `uv.exe` path (e.g. `C:\Users\<you>\.local\bin\uv.exe`).
+2. **External bridge repo** — the Python server lives in [chongdashu/unreal-mcp](https://github.com/chongdashu/unreal-mcp), *not* in the game repo. Clone it somewhere local:
+   ```
+   cd ~/workspace
+   git clone https://github.com/chongdashu/unreal-mcp
+   ```
+   The entry point is `<clone>/Python/unreal_mcp_server.py`.
+3. **UE 5.5** with the MeepleMates project (see *Unreal Engine* section above). The
+   `UnrealMCP` plugin is already enabled in `MeepleMates.uproject`; it compiles when you
+   open the project. It is editor-only (Win64/Mac/Linux) and does **not** ship to Quest.
+
+#### Register the server (once per machine)
+Use absolute paths (forward or back slashes both work on Windows):
+```
+claude mcp add -s user unrealMCP -- "C:\Users\<you>\.local\bin\uv.exe" --directory "C:\path\to\unreal-mcp\Python" run unreal_mcp_server.py
+```
+This writes the server to `~/.claude.json` under user scope. To change or remove it:
+```
+claude mcp get unrealMCP
+claude mcp remove unrealMCP -s user
+```
+
+#### Connect & verify
+1. **Open the MeepleMates project in UE 5.5** so the plugin compiles and the TCP
+   listener on `127.0.0.1:55557` starts — the bridge cannot connect to a closed editor.
+2. In a Claude Code session, run `/mcp` (or `claude mcp get unrealMCP`) and confirm
+   `unrealMCP` shows **Connected** with tool groups: editor / blueprint / node / project / umg.
+3. Sanity check: ask Claude to list level actors via an MCP editor tool — you should get
+   real editor state, not a connection error.
+
+> Troubleshooting: a "Connected" stdio server only means the Python process launched; if
+> MCP tool calls error, the editor is closed or the plugin failed to compile. Re-open the
+> project and watch the Output Log for `UnrealMCP` startup messages.
+
 ### Continue
 - add to VSCode via extensions
 - `.continue/config.json`
