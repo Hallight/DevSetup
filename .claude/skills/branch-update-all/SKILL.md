@@ -1,6 +1,6 @@
 ---
 name: branch-update-all
-description: Use when the user asks to sync all local branches/worktrees with their remotes, refresh everything from origin, or says "update branches", "pull all", "sync worktrees", "refresh local", "update all branches". Stashes dirty work, pulls each worktree, auto-merges main into behind branches, removes worktrees whose PR has merged, and reports a summary.
+description: Use when the user asks to sync all local branches/worktrees with their remotes, refresh everything from origin, or says "update branches", "pull all", "sync worktrees", "refresh local", "update all branches". Stashes dirty work, pulls each worktree, auto-merges main into behind branches, removes worktrees whose PR has merged, sweeps orphaned leftover directories and stray files under .claude/worktrees/, and reports a summary.
 ---
 
 # Update All Branches / Worktrees
@@ -179,7 +179,30 @@ For each candidate, the two-condition check above is the safety gate — once it
 
 Record `(branch, "cleaned-up")` for each successful removal so the summary reflects it. If the PR state lookup returns `CLOSED` (closed without merging) or anything other than `MERGED`, leave the worktree alone and surface it in the summary as `pr-closed-unmerged` so the user can decide.
 
-### 5. Final summary
+### 5. Sweep orphaned directories and stray files in `.claude/worktrees/`
+
+Steps 2–4 only see **tracked** worktrees (`git worktree list`). A directory whose worktree metadata was already pruned — but whose folder survived on disk — is invisible to them. So is a loose scratch file dropped in the worktrees parent. Sweep for both after cleanup.
+
+```bash
+WT_DIR="$REPO_ROOT/.claude/worktrees"
+# Paths git still tracks as worktrees (these are NOT orphans — leave them).
+TRACKED=$(git -C "$REPO_ROOT" worktree list --porcelain | awk '/^worktree /{print $2}')
+```
+
+For each entry directly under `$WT_DIR`:
+
+- **It's a tracked worktree path** (matches `$TRACKED`) → leave it; steps 3–4 own it.
+- **It's a directory, not tracked, and empty** → stale leftover. Safe to remove with no further checks.
+- **It's a directory, not tracked, and non-empty** → a dead worktree (confirm: no `.git` entry, absent from `git worktree list`). Treat the directory *name* as a branch name and apply the **same MERGED gate as step 4**: `gh pr list --head "$NAME" --state all --limit 1`.
+  - PR state `MERGED` → safe to remove.
+  - Anything else (closed-unmerged, no PR, or it still contains uncommitted-looking work) → **do not delete**. Report it as `orphan-dir-unverified` for the user to inspect — it could hold unsaved work, exactly the case we protect against elsewhere.
+- **It's a loose file** (not a directory) directly under `$WT_DIR` → stray scratch artifact. There's no safety gate for arbitrary files, so **don't auto-delete** — list it in the summary and ask the user before removing.
+
+Delegate every actual directory removal to the **`/branch-cleanup`** skill (passing the directory name): it owns the Windows-safe sequence — including the `rm -rf` → PowerShell `Remove-Item` fallback for the `Device or resource busy` lock that bites even empty directories — and its `branch -D` is a harmless no-op when no matching branch exists.
+
+Record each removed orphan and each reported stray for the summary.
+
+### 6. Final summary
 
 After all worktrees are processed, print a table:
 
@@ -210,12 +233,15 @@ Finally, surface anything that needs the user's attention:
 - Worktrees whose upstream was pruned but PR is not in `MERGED` state — flag as `pr-closed-unmerged` or `pr-not-found` for the user to investigate.
 - Branches where the stash pop left conflicts (now resolved but uncommitted — the user's WIP is intact).
 - Any stash that couldn't be popped and was left in `git stash list`.
+- Orphaned directories swept in step 5 (empty leftovers removed, or merged-PR dead worktrees removed by name).
+- Orphan directories left in place as `orphan-dir-unverified`, and stray loose files awaiting the user's go-ahead to delete.
 
 ## Safety rules
 
 - Never `--force`, never `reset --hard`, never `clean -fd`.
 - Never `commit` the contents of a popped stash — that's the user's uncommitted WIP.
 - Only delete a worktree/local branch when its PR state is `MERGED`. A missing upstream alone is not sufficient — it could be a never-pushed local branch or a PR closed without merging.
+- When sweeping orphaned directories (step 5), the same `MERGED` gate applies to non-empty dirs (keyed on the directory name). Only empty leftover directories may be removed unconditionally. Never auto-delete stray loose files — report and ask.
 - Never delete the worktree you're currently `cd`'d into. Always `cd` outside the worktree before `git worktree remove`.
 - Never delete the main worktree or the `main` branch.
 - Stash messages always include `branch-update-all auto-stash <timestamp>` so the user can locate them after the fact.
