@@ -36,10 +36,9 @@ gh pr list --head $(git branch --show-current) --json number,title,url
 
 4. **Implement all requested changes** in a single pass. Address every comment — do not skip any.
 
-5. **Resolve bot account** — derive the bot username and author string from the current developer:
+5. **Resolve bot account** — discover the `-claude` bot from `gh auth status`. Don't append `-claude` to the current login: the active `gh` account may *already be* the bot, which would produce a nonexistent `…-claude-claude` (a 404 that silently corrupts the author string).
    ```bash
-   DEV_USER=$(gh api user --jq '.login')
-   BOT_USER="${DEV_USER}-claude"
+   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
    BOT_ID=$(gh api "users/${BOT_USER}" --jq '.id')
    BOT_AUTHOR="${BOT_USER} <${BOT_ID}+${BOT_USER}@users.noreply.github.com>"
    gh auth switch --user "${BOT_USER}"

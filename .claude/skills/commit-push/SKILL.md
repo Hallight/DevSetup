@@ -23,10 +23,9 @@ git log --oneline -5
 ## Instructions
 
 1. Review the git status output above
-2. **Resolve the bot account** — all commits are authored by the developer's `-claude` bot account:
+2. **Resolve the bot account** — all commits are authored by the developer's `-claude` bot account. Discover it from `gh auth status` rather than appending `-claude` to the current login: the active `gh` account may *already be* the bot, in which case appending yields a nonexistent `…-claude-claude` (a 404 that silently corrupts the author string).
    ```bash
-   DEV_USER=$(gh api user --jq '.login')
-   BOT_USER="${DEV_USER}-claude"
+   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
    BOT_ID=$(gh api "users/${BOT_USER}" --jq '.id')
    BOT_AUTHOR="${BOT_USER} <${BOT_ID}+${BOT_USER}@users.noreply.github.com>"
    ```
@@ -52,8 +51,7 @@ git log --oneline -5
 ## Example
 
 ```bash
-DEV_USER=$(gh api user --jq '.login')
-BOT_USER="${DEV_USER}-claude"
+BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
 BOT_ID=$(gh api "users/${BOT_USER}" --jq '.id')
 BOT_AUTHOR="${BOT_USER} <${BOT_ID}+${BOT_USER}@users.noreply.github.com>"
 
