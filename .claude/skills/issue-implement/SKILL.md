@@ -5,7 +5,7 @@ description: Use when the user asks to implement an issue, start work on a ticke
 
 # Implement Issue
 
-Full end-to-end workflow for implementing an issue: fetch the spec, branch, implement, test, open a PR, and stop for review.
+Full end-to-end workflow for implementing an issue: fetch the spec, branch, implement, test, open a PR, write learnings back to the tracker, and stop for review.
 
 ## Instructions
 
@@ -17,6 +17,8 @@ Get the full issue from the project's tracker (Linear / Jira / GitHub Issues —
 - **Testing Specifications** — how to verify each AC
 - **Technical Guidance** — files to change, approach, gotchas
 - **Approvers** — who must approve the PR before merge
+
+Also fetch the issue's **relations** (blocks / blockedBy / relatedTo) — step 6 needs them. If the title starts with `Spike:` or `Decision:`, or the issue is otherwise research rather than a feature, expect step 6 to be a large part of the work, not a footnote.
 
 ### 2. Create a worktree for the branch
 
@@ -45,6 +47,24 @@ Fix any failures before pushing.
 
 Use the `pr-create` skill — it commits, pushes, switches to the bot account, creates the PR, requests reviewers from the Approvers section, executes verifiable test plan steps, and posts evidence.
 
-### 6. Stop
+### 6. Write learnings back to the tracker
 
-**Do not merge.** Wait for all approvers listed in the issue to approve on GitHub. CI green is not sufficient — approval is required. Report the PR URL and which approvers still need to review.
+The PR records *what changed*. The tracker is where *what was learned* has to live, because the next issue's implementer reads the ticket, not the diff.
+
+**On the issue itself — always:**
+- Comment with the PR link and a per-AC status table: done / blocked (with the reason and the exact unblock procedure) / deferred (with why). Partial completion is a valid outcome; a silent partial is not.
+- Move the issue to the project's in-progress / in-review status and attach the PR as a link.
+
+**On related issues — whenever a finding changes their assumptions:**
+- Walk the relations from step 1. For each downstream issue whose Technical Guidance, Acceptance Criteria, or design rules are affected by what you learned, post **one comment on that issue** containing: what was learned, the measured evidence (numbers, not adjectives), and what it means for *that issue specifically*. Link the PR or doc that holds the detail.
+- Classify each finding as it lands:
+  - **Confirms** a downstream assumption → still say so. A design rule that has been empirically validated is worth more than one that was merely asserted; record the number that validated it.
+  - **Contradicts** issue text (wrong library, wrong column, wrong data range, wrong constraint) → comment **and patch the issue body**. Comments get skimmed; stale guidance gets followed.
+  - **Blocks** a downstream issue → comment on the blocked issue naming precisely what unblocks it.
+- Do not post to issues the finding does not touch. One precise comment beats a broadcast.
+
+**Spike and decision tickets specifically:** the deliverable *is* the knowledge, so this step is the deliverable. A spike whose findings only exist in a PR description has not shipped. Do this before reporting done, not after being asked.
+
+### 7. Stop
+
+**Do not merge.** Wait for all approvers listed in the issue to approve on GitHub. CI green is not sufficient — approval is required. Report the PR URL, which approvers still need to review, and which related issues received learnings in step 6.

@@ -5,7 +5,7 @@ description: Use when the user asks to implement a Trello card, work on a card, 
 
 # Implement Trello Card
 
-Full end-to-end workflow for implementing a Trello card: fetch the spec, branch, implement, test, open a PR, and stop for review. Mirrors `/issue-implement` but pulls from Trello (no Linear tracker).
+Full end-to-end workflow for implementing a Trello card: fetch the spec, branch, implement, test, open a PR, write learnings back to the board, and stop for review. Mirrors `/issue-implement` but pulls from Trello (no Linear tracker).
 
 ## Instructions
 
@@ -27,6 +27,7 @@ From the card, gather:
 - **Acceptance criteria** → use `mcp__trello__get_checklist_items` (or the items embedded in `mcp__trello__get_card` output) on the card's checklist named "Acceptance criteria". These items are the verifiable acceptance criteria — every box must be true in prod when the PR merges. (= Linear "Acceptance Criteria")
 - **`idMembers`** → approvers. If empty, fall back to the repo owner (per project CLAUDE.md or `git config remote.origin.url`).
 - **`idShort`** and **`shortLink`** → context for branch + PR naming.
+- **Related cards** → Trello has no relations graph, so collect them by hand: cards attached to this card, card URLs or `mm-N` references in `desc` (look for "Depends on", "Blocks", "See also"), and neighbouring cards in the same list. Step 6 needs this list. If the card name starts with `Spike:` or `Decision:`, or the card is otherwise research rather than a feature, expect step 6 to be a large part of the work, not a footnote.
 
 If the card has no `## Description` or no "Acceptance criteria" checklist, **stop and ask the user** before proceeding — under-specified work is a recipe for scope creep.
 
@@ -66,12 +67,30 @@ When invoking `/pr-create`:
 - **PR body**: include a "Closes Trello card: <short-url>" line so the card and PR are linked. Include the acceptance-criteria checklist as a Markdown checklist in the PR body so reviewers can verify each item.
 - **Approvers**: pass the Trello card's `idMembers` (resolved to GitHub usernames if needed). Fall back to repo owner if empty.
 
-After the PR is open, optionally `mcp__trello__add_comment` on the card with the PR URL so the card has the link too.
+### 6. Write learnings back to the board
 
-### 6. Stop
+The PR records *what changed*. The board is where *what was learned* has to live, because the next card's implementer reads the card, not the diff.
+
+**On the card itself — always:**
+- `mcp__trello__add_comment` with the PR link and a per-AC status table: done / blocked (with the reason and the exact unblock procedure) / deferred (with why). Partial completion is a valid outcome; a silent partial is not.
+- Tick completed acceptance-criteria items via `mcp__trello__update_checklist_item`; leave blocked ones unticked so the card stays honest.
+- `mcp__trello__move_card` to the board's in-progress / in-review list, and `mcp__trello__attach_data_to_card` (or a URL attachment) with the PR so the link is on the card, not just in a comment.
+
+**On related cards — whenever a finding changes their assumptions:**
+- Walk the related-cards list from step 1. For each card whose Technical Guidance, acceptance criteria, or design rules are affected by what you learned, `mcp__trello__add_comment` **once on that card** with: what was learned, the measured evidence (numbers, not adjectives), and what it means for *that card specifically*. Link the PR or doc that holds the detail.
+- Classify each finding as it lands:
+  - **Confirms** a downstream assumption → still say so. A design rule that has been empirically validated is worth more than one that was merely asserted; record the number that validated it.
+  - **Contradicts** card text (wrong library, wrong column, wrong data range, wrong constraint) → comment **and patch the card `desc`** via `mcp__trello__update_card_details`. Comments get skimmed; stale guidance gets followed.
+  - **Blocks** a downstream card → comment on the blocked card naming precisely what unblocks it.
+- Do not post to cards the finding does not touch. One precise comment beats a broadcast.
+
+**Spike and decision cards specifically:** the deliverable *is* the knowledge, so this step is the deliverable. A spike whose findings only exist in a PR description has not shipped. Do this before reporting done, not after being asked.
+
+### 7. Stop
 
 **Do not merge.** Wait for all approvers (card members) to approve on GitHub. CI green is not sufficient — approval is required. Report:
 
 - The PR URL
 - Which approvers still need to review
+- Which related cards received learnings in step 6
 - Any manual pre-merge steps from the card (called out in Technical Guidance) that must happen before merge (e.g. "delete CDK-owned Route 53 record")
