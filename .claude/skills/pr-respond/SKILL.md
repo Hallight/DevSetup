@@ -38,7 +38,9 @@ gh pr list --head $(git branch --show-current) --json number,title,url
 
 5. **Resolve bot account** — discover the `-claude` bot from `gh auth status`. Don't append `-claude` to the current login: the active `gh` account may *already be* the bot, which would produce a nonexistent `…-claude-claude` (a 404 that silently corrupts the author string).
    ```bash
-   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
+   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | sed -n 's/.*account \([^ ]*\).*/\1/p' | head -1)
+   # Assert before anything is authored: a wrong value here resolves to a real stranger on GitHub.
+   case "$BOT_USER" in *-claude) ;; *) echo "ERROR: BOT_USER='$BOT_USER' is not a -claude account. Stop." >&2; exit 1;; esac
    BOT_ID=$(gh api "users/${BOT_USER}" --jq '.id')
    BOT_AUTHOR="${BOT_USER} <${BOT_ID}+${BOT_USER}@users.noreply.github.com>"
    gh auth switch --user "${BOT_USER}"
@@ -65,7 +67,7 @@ gh pr list --head $(git branch --show-current) --json number,title,url
      -m "$(cat <<'EOF'
    fix: address PR feedback
 
-   Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+   Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
    EOF
    )" && git push
    ```

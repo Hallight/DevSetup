@@ -35,8 +35,10 @@ git status -sb | head -1
    `gh auth switch --user` is case-sensitive and the bot login may not match `${DEV_USER}-claude` exactly (e.g. lowercase). Discover both names from `gh auth status`:
 
    ```bash
-   DEV_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -v -- '-claude' | awk '{print $7}')
-   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
+   DEV_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -v -- '-claude' | sed -n 's/.*account \([^ ]*\).*/\1/p' | head -1)
+   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | sed -n 's/.*account \([^ ]*\).*/\1/p' | head -1)
+   # Assert before anything is authored: a wrong value here resolves to a real stranger on GitHub.
+   case "$BOT_USER" in *-claude) ;; *) echo "ERROR: BOT_USER='$BOT_USER' is not a -claude account. Stop." >&2; exit 1;; esac
    BOT_ID=$(gh api "users/${BOT_USER}" --jq '.id')
    BOT_AUTHOR="${BOT_USER} <${BOT_ID}+${BOT_USER}@users.noreply.github.com>"
 

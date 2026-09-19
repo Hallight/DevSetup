@@ -25,7 +25,9 @@ git log --oneline -5
 1. Review the git status output above
 2. **Resolve the bot account** — all commits are authored by the developer's `-claude` bot account. Discover it from `gh auth status` rather than appending `-claude` to the current login: the active `gh` account may *already be* the bot, in which case appending yields a nonexistent `…-claude-claude` (a 404 that silently corrupts the author string).
    ```bash
-   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
+   BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | sed -n 's/.*account \([^ ]*\).*/\1/p' | head -1)
+   # Assert before anything is authored: a wrong value here resolves to a real stranger on GitHub.
+   case "$BOT_USER" in *-claude) ;; *) echo "ERROR: BOT_USER='$BOT_USER' is not a -claude account. Stop." >&2; exit 1;; esac
    BOT_ID=$(gh api "users/${BOT_USER}" --jq '.id')
    BOT_AUTHOR="${BOT_USER} <${BOT_ID}+${BOT_USER}@users.noreply.github.com>"
    ```
@@ -33,7 +35,7 @@ git log --oneline -5
 4. Analyze the changes and create a descriptive commit message following the project conventions:
    - Format: `type: description` (feat, fix, chore, docs, refactor)
    - Keep it concise but descriptive
-   - Always end with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`
+   - Always end with: `Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>`
 5. Create the commit with `--author` to attribute to the bot account:
    ```bash
    git commit --author="$BOT_AUTHOR" -m "..."
@@ -51,7 +53,9 @@ git log --oneline -5
 ## Example
 
 ```bash
-BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
+BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | sed -n 's/.*account \([^ ]*\).*/\1/p' | head -1)
+# Assert before anything is authored: a wrong value here resolves to a real stranger on GitHub.
+case "$BOT_USER" in *-claude) ;; *) echo "ERROR: BOT_USER='$BOT_USER' is not a -claude account. Stop." >&2; exit 1;; esac
 BOT_ID=$(gh api "users/${BOT_USER}" --jq '.id')
 BOT_AUTHOR="${BOT_USER} <${BOT_ID}+${BOT_USER}@users.noreply.github.com>"
 
@@ -62,7 +66,7 @@ feat: Add customer analytics dashboard
 - Add job completion rate metrics
 - Add AR aging summary
 
-Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 EOF
 )" && git push origin $(git branch --show-current)
 ```

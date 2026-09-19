@@ -25,8 +25,10 @@ Cross-reference against the project's required-approvers list. If any required a
 ### 2. Merge
 
 ```bash
-DEV_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -v '\-claude' | awk '{print $7}')
-BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | awk '{print $7}')
+DEV_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -v '\-claude' | sed -n 's/.*account \([^ ]*\).*/\1/p' | head -1)
+BOT_USER=$(gh auth status 2>&1 | grep 'Logged in to github.com account' | grep -- '-claude' | sed -n 's/.*account \([^ ]*\).*/\1/p' | head -1)
+# Assert before anything is authored: a wrong value here resolves to a real stranger on GitHub.
+case "$BOT_USER" in *-claude) ;; *) echo "ERROR: BOT_USER='$BOT_USER' is not a -claude account. Stop." >&2; exit 1;; esac
 gh auth switch --user "$BOT_USER"
 gh pr merge <number> --squash --delete-branch
 gh auth switch --user "$DEV_USER"
